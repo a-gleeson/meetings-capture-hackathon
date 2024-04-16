@@ -2,12 +2,14 @@ import base64
 import io
 import os
 
+import pandas as pd
 import streamlit as st
 from PIL import Image
 
 from config.logging import setup_logging
 from config.settings import ENV
 from hackathon.streamlit.utils import check_password
+from hackathon.transcripts.transcript_handling import Transcript
 
 get_logger = setup_logging()
 logger = get_logger(__name__)
