@@ -36,17 +36,16 @@ class API:
         json_respn =  response.json()
         return json_respn
     
-    def invoke_get(self, conversation_id, message_id = None ):
+    def invoke_get(self, conversation_id):
         uri_path = "/conversation/"+conversation_id
-        if message_id:
-            uri_path = uri_path + "/" + message_id
         response = requests.get(
             self.url + uri_path,
             headers=self.headers,
         )
         json_response = response.json()
 
-        return json_response
+        last_msg_id = json_response["lastMessageId"]
+        return json_response["messageMap"][last_msg_id]["content"][0]["body"]
     
 
 summary_api = API(SUMMARISE_API, SUMMARISE_URL)
