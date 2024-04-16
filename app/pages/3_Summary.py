@@ -2,6 +2,7 @@ import base64
 import datetime as dt
 import io
 import os
+import time 
 
 import streamlit as st
 from PIL import Image
@@ -10,6 +11,7 @@ from config.logging import setup_logging
 from config.settings import ENV
 from hackathon.streamlit.utils import check_password
 from hackathon.transcripts.transcript_handling import Transcript
+from hackathon.api import summary_api
 
 get_logger = setup_logging()
 logger = get_logger(__name__)
@@ -101,7 +103,12 @@ st.markdown(
 
 
 def llm_summarise(transcript: str) -> str:
-    return f"This is a summary: {transcript}"
+    post_response = summary_api.invoke_post(transcript)
+    
+    time.sleep(15)
+
+    get_response = summary_api.invoke_get(post_response["conversationId"])
+    return get_response
 
 
 def query_llm(prompt: str) -> str:
