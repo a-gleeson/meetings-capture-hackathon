@@ -9,9 +9,7 @@ LOG_LEVEL = os.environ.get("LOG_LEVEL", "DEBUG")
 PROJECT_PATH = os.environ.get("PROJECT_PATH")
 OPENSEARCH_URL = os.environ.get("OPENSEARCH_URL")
 OPENSEARCH_BATCH_SIZE = int(os.environ.get("OPENSEARCH_BATCH_SIZE", 500))
-OPENSEARCH_ENDPOINT_NAME = os.environ.get(
-    "OPENSEARCH_ENDPOINT_NAME", "vstore"
-)
+OPENSEARCH_ENDPOINT_NAME = os.environ.get("OPENSEARCH_ENDPOINT_NAME", "vstore")
 OPENSEARCH_INDEX_NAME = os.environ.get("OPENSEARCH_INDEX_NAME", "vacancies")
 OPENSEARCH_SKILLS_INDEX_NAME = os.environ.get(
     "OPENSEARCH_SKILLS_INDEX_NAME", "unique_skills"

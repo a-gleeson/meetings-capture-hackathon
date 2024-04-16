@@ -19,7 +19,12 @@ Answer:
 
 
 _advice_prompt = (
-    B_INST + B_SYS + _advice_system_prompt + E_SYS + _advice_instruction + E_INST
+    B_INST
+    + B_SYS
+    + _advice_system_prompt
+    + E_SYS
+    + _advice_instruction
+    + E_INST
 )
 
 ADVICE_PROMPT = PromptTemplate.from_template(_advice_prompt)
@@ -39,4 +44,3 @@ document_retrieval_prompt = PromptTemplate.from_template(
     """
 """
 )
-

@@ -22,7 +22,9 @@ class OpensearchClient:
         self.client = None
         self.endpoint_name = endpoint_name
         self.index_name = index_name
-        self.opensearch_endpoint = self._get_opensearch_endpoint(endpoint_name, region)
+        self.opensearch_endpoint = self._get_opensearch_endpoint(
+            endpoint_name, region
+        )
         self.client = self.get_client()
 
     def get_client(self):
@@ -68,7 +70,9 @@ class OpensearchClient:
             self.http_auth = ("admin", "admin")
             return OPENSEARCH_URL
         client = boto3.client("es", region_name=region)
-        response = client.describe_elasticsearch_domain(DomainName=endpoint_name)
+        response = client.describe_elasticsearch_domain(
+            DomainName=endpoint_name
+        )
         return response["DomainStatus"]["Endpoints"]["vpc"]
 
     def _put_bulk_in_opensearch(self, docs):
@@ -107,7 +111,9 @@ class OpensearchClient:
         if not index_name:
             index_name = self.index_name
         settings = {
-            "settings": {"index": {"knn": True, "knn.space_type": "cosinesimil"}}
+            "settings": {
+                "index": {"knn": True, "knn.space_type": "cosinesimil"}
+            }
         }
         response = self.client.indices.create(index=index_name, body=settings)
         return bool(response["acknowledged"])

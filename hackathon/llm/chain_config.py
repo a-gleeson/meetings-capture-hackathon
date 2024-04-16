@@ -6,7 +6,6 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain_core.output_parsers.transform import BaseTransformOutputParser
 
 from hackathon.llm.prompts.core import (
-
     PromptTemplate,
 )
 

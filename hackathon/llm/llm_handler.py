@@ -16,7 +16,10 @@ class LLMRunner:
     """
 
     def __init__(
-        self, llm: LLM, vectorstore: VectorStore, chain_configs: List[ChainConfig]
+        self,
+        llm: LLM,
+        vectorstore: VectorStore,
+        chain_configs: List[ChainConfig],
     ) -> None:
         """
         Sets up runner with required components of an llm, vectorstore and a list of llm chain configs.

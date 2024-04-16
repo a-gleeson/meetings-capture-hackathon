@@ -155,4 +155,3 @@ st.markdown(
 """
 )
 # * [Initialise the data](/initialise_the_data) will load in the previous vacancies from s3.
-
