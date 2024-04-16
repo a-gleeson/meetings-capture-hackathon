@@ -39,3 +39,9 @@ AWS_SAGEMAKER_ENDPOINT = os.environ.get(
 )
 
 MODEL = "claude-v3-sonnet"
+SUMMARISE_API = os.environ.get("SUMMARISE_API")
+SUMMARISE_URL = os.environ.get("SUMMARISE_URL")
+FACTCHECK_API = os.environ.get("FACTCHECK_API")
+FACTCHECK_URL = os.environ.get("FACTCHECK_URL")
+GLOSSERY_API = os.environ.get("GLOSSERY_API")
+GLOSSERY_URL = os.environ.get("GLOSSERY_URL")
