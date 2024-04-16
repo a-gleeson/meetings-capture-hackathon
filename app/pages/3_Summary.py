@@ -2,8 +2,7 @@ import base64
 import datetime as dt
 import io
 import os
-import time
-import time
+import time 
 
 import streamlit as st
 from PIL import Image
@@ -14,6 +13,7 @@ from hackathon.api import conversation_api, fact_check_api, glossery_api, summar
 from hackathon.api import conversation_api, fact_check_api, glossery_api, summary_api
 from hackathon.streamlit.utils import check_password
 from hackathon.transcripts.transcript_handling import Transcript
+from hackathon.api import summary_api
 
 get_logger = setup_logging()
 logger = get_logger(__name__)
