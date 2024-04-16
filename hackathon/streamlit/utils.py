@@ -33,9 +33,10 @@ from config.settings import (
     S3_LOADER_FILE_NAME,
     VECTOR_STORE_CONFIG,
 )
-from hackathon.llm.chain_config import (
 
-)
+# from hackathon.llm.chain_config import (
+# # Empty for now
+# )
 from hackathon.llm.llm import LLama2, SagemakerHostedLLM
 from hackathon.llm.llm_handler import LLMRunner
 from hackathon.loader.chunker import TextChunker
@@ -156,10 +157,10 @@ def initialise_llm_runner():
     llm_runner = LLMRunner(
         llm=llm,
         vectorstore=vector_store,
-        chain_configs=[
-        ],
+        chain_configs=[],
     )
     st.session_state["runner"] = llm_runner
+
 
 def initialise_vector_store_loader():
     if LLM_MODEL == "local_llm":
@@ -197,9 +198,9 @@ def initialise_vector_store_loader():
         chunker=TextChunker(chunk_size=1000, overlap=10),
     )
 
+
 def safe_literal_eval(x):
     try:
         return literal_eval(x)
     except (SyntaxError, ValueError):
         return None
-
