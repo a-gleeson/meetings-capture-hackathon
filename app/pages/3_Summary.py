@@ -100,8 +100,8 @@ st.markdown(
 )
 
 
-def llm_summarise() -> str:
-    return "This is a summary"
+def llm_summarise(transcript: str) -> str:
+    return f"This is a summary: {transcript}"
 
 
 def query_llm(prompt: str) -> str:
@@ -122,7 +122,7 @@ with st.expander("#### Generate summary", expanded=False):
         st_summarise_button = st.button("Generate meeting summary")
         if st_summarise_button or st.session_state.summary_generated:
             st.session_state.summary_generated = True
-            st.markdown(llm_summarise())
+            st.markdown(llm_summarise(transcript=data))
             prompt = st.text_input(label="Enter query here:", placeholder="How ")
             st_query_button = st.button("Query LLM")
             if st_query_button and prompt != "":
