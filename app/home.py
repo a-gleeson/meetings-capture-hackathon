@@ -9,6 +9,7 @@ from streamlit_gov_uk_components import gov_uk_checkbox
 from config.logging import setup_logging
 from config.settings import ENV
 from hackathon.streamlit.utils import check_password
+from hackathon.transcripts.transcript_handling import Transcript
 
 get_logger = setup_logging()
 logger = get_logger(__name__)
@@ -28,8 +29,14 @@ def image_to_base64(image):
     return img_str
 
 
+@st.cache_data
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode("utf-8")
+
+
 cwd = os.getcwd()
-image_path = f"{cwd}/static/images/gov_uk.png"
+image_path = os.path.join(cwd, "static", "images", "gov_uk.png")
 image = Image.open(image_path)
 
 header_css = """
