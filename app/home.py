@@ -8,9 +8,7 @@ from streamlit_gov_uk_components import gov_uk_checkbox
 
 from config.logging import setup_logging
 from config.settings import ENV
-from hackathon.streamlit.utils import (
-    check_password,
-)
+from hackathon.streamlit.utils import check_password
 
 get_logger = setup_logging()
 logger = get_logger(__name__)
@@ -155,4 +153,3 @@ st.markdown(
 """
 )
 # * [Initialise the data](/initialise_the_data) will load in the previous vacancies from s3.
-

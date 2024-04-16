@@ -129,12 +129,15 @@ def initialise_llm_runner():
 
     if VECTOR_STORE_CONFIG == "chroma":
         vector_store = ChromaStore(
-            embedding_function=st_embedder, collection_name=OPENSEARCH_INDEX_NAME
+            embedding_function=st_embedder,
+            collection_name=OPENSEARCH_INDEX_NAME,
         )
     else:
         if "skills_os_client" not in st.session_state:
             st.session_state["skills_os_client"] = OpensearchClient(
-                OPENSEARCH_SKILLS_INDEX_NAME, OPENSEARCH_ENDPOINT_NAME, AWS_REGION
+                OPENSEARCH_SKILLS_INDEX_NAME,
+                OPENSEARCH_ENDPOINT_NAME,
+                AWS_REGION,
             )
         if "vacancy_os_client" not in st.session_state:
             st.session_state["vacancy_os_client"] = OpensearchClient(
@@ -142,7 +145,9 @@ def initialise_llm_runner():
             )
 
         vector_store = OpenSearchStore(
-            st_embedder, OPENSEARCH_INDEX_NAME, st.session_state["vacancy_os_client"]
+            st_embedder,
+            OPENSEARCH_INDEX_NAME,
+            st.session_state["vacancy_os_client"],
         )
 
     if LLM_MODEL == "local_llm":
@@ -180,7 +185,9 @@ def initialise_vector_store_loader():
                 OPENSEARCH_INDEX_NAME, OPENSEARCH_ENDPOINT_NAME, AWS_REGION
             )
         vector_store = OpensearchClientStore(
-            st_embedder, OPENSEARCH_INDEX_NAME, st.session_state["vacancy_os_client"]
+            st_embedder,
+            OPENSEARCH_INDEX_NAME,
+            st.session_state["vacancy_os_client"],
         )
 
     if LOADER_CONFIG == "file_loader":

@@ -39,4 +39,3 @@ document_retrieval_prompt = PromptTemplate.from_template(
     """
 """
 )
-

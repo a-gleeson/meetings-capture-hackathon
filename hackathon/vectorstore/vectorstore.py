@@ -115,7 +115,12 @@ class OpenSearchStore(VectorStore):
         return self.vectorstore.similarity_search_with_score(query, k=10)
 
     def retrieve_data(
-        self, query: str, search_type: str, space_type: str, pre_filter, k: int = 5
+        self,
+        query: str,
+        search_type: str,
+        space_type: str,
+        pre_filter,
+        k: int = 5,
     ):
         """
         Similarity search which returns values with score attachmend with up to k results,
