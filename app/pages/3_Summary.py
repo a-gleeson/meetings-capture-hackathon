@@ -5,7 +5,6 @@ import os
 
 import streamlit as st
 from PIL import Image
-from streamlit_gov_uk_components import gov_uk_checkbox
 
 from config.logging import setup_logging
 from config.settings import ENV
@@ -15,7 +14,7 @@ from hackathon.transcripts.transcript_handling import Transcript
 get_logger = setup_logging()
 logger = get_logger(__name__)
 
-st.set_page_config(page_title="", page_icon="🎯", layout="wide")
+st.set_page_config(page_title="Meeting Record Creator", page_icon="memo", layout="wide")
 
 # Password protection of pages
 if ENV.upper() == "PROD" and not check_password():
@@ -34,6 +33,8 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = ""
 if "summary_generated" not in st.session_state:
     st.session_state.summary_generated = False
+if "transcript_uploaded" not in st.session_state:
+    st.session_state.transcript_uploaded = False
 
 
 cwd = os.getcwd()
@@ -49,6 +50,7 @@ header_css = """
             display: flex;
             align-items: center;
             height: 60px; /* Fixed height for the header */
+            text-align: center;
         }
         .header img {
             margin-right: 120px;  /* Adjust spacing between image and text */
@@ -59,6 +61,8 @@ header_css = """
             line-height: 1.0; /* Adjust line height to match image height */
             font-weight: bold; /* Make text bold */
             font-family: Arial, Helvetica, sans-serif; /* Set font family */
+            text-align: center;
+            padding: 20px;
         }
         .blue-underline {
             background-color: #1d70b8; /* Blue color for the underline */
@@ -83,66 +87,17 @@ with header:
     st.markdown(
         f"""
         <div class="header">
-            <img src="data:image/png;base64,{image_to_base64(image)}" width="200">  <!-- Adjust width as needed -->
-            <p>Civil Service Jobs</p>
+            <p>Meeting Record Creator</p>
         </div>
     """,
         unsafe_allow_html=True,
     )
-
-# Blue underline section
-st.markdown('<div class="blue-underline"></div>', unsafe_allow_html=True)
-
-# CSS for the alpha box
-alpha_css = """
-    <style>
-        .alpha-box {
-            display: flex;
-            align-items: center;
-            font-family: Arial, Helvetica, sans-serif;
-            margin-top: -15px; /* Add space above the alpha box */
-            margin-left: 75px; /* Adjustable left margin */
-        }
-        .alpha {
-            background-color: #1d70b8; /* Blue color */
-            color: white;
-            padding: 3px 6px;
-            font-size: 14px;
-            font-weight: bold; /* Make ALPHA text bold */
-            border-radius: 0px;
-            margin-right: 10px; /* Space between ALPHA box and text */
-        }
-    </style>
-"""
-
-# Add the CSS to the page
-st.markdown(alpha_css, unsafe_allow_html=True)
-
-# Create the alpha box section
 st.markdown(
     """
-    <div class="alpha-box">
-        <span class="alpha">DISCOVERY</span>
-        <span>Your feedback will help us to improve.</span>
-    </div>
-""",
+            <h2 style="font-family: Arial, Helvetica, sans-serif; color: black;">Create meeting summary</h2>
+            """,
     unsafe_allow_html=True,
 )
-
-# Apply custom styles to the sidebar using st.markdown
-sidebar_css = """
-    <style>
-        .sidebar {
-            background-color: black;
-            color: white;
-        }
-    </style>
-"""
-
-st.markdown(sidebar_css, unsafe_allow_html=True)
-st.sidebar.success("Select a page above")
-
-# * [Initialise the data](/initialise_the_data) will load in the previous vacancies from s3.
 
 
 def llm_summarise() -> str:
@@ -150,22 +105,34 @@ def llm_summarise() -> str:
 
 
 def query_llm(prompt: str) -> str:
-
     return f'Hello! I am *not* an LLM! James created me as an "artificial artificial intelligence" - this is the only thing I can say. ({dt.datetime.now()})'
 
 
-with st.container():
+with st.expander("#### Upload transcript", expanded=False):
     data_path = st.file_uploader(label="Upload transcript:")
     if data_path is not None:
         transcript = Transcript(data_path)
         data = str(transcript)
-        st_summarise_button = st.button("Summarise")
+        st.session_state.transcript_uploaded = True
+
+with st.expander("#### Generate summary", expanded=False):
+    if not st.session_state.transcript_uploaded:
+        st.error("Upload meeting transcript", icon="⚠️")
+    else:
+        st_summarise_button = st.button("Generate meeting summary")
         if st_summarise_button or st.session_state.summary_generated:
             st.session_state.summary_generated = True
             st.markdown(llm_summarise())
-            prompt = st.text_input(label="Enter query here:")
+            prompt = st.text_input(label="Enter query here:", placeholder="How ")
             st_query_button = st.button("Query LLM")
             if st_query_button and prompt != "":
                 st.session_state.chat_history += f"User: {prompt}\n\n"
                 st.session_state.chat_history += f"Claude: {query_llm(prompt)}\n\n"
                 st.markdown(st.session_state.chat_history)
+            # TODO: Add button to download summary as txt file
+
+with st.expander("#### Identify facts", expanded=False):
+    st.write("Work in progress")
+
+with st.expander("#### Generate glossary", expanded=False):
+    st.write("Work in progress")
