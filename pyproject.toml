@@ -2,11 +2,13 @@
 name = "hackathon"
 version = "0.1.0"
 description = ""
-authors = [""]
+authors = ["James Osmond <james.osmond@dhsc.gov.uk>"]
 readme = "README.md" 
 
 packages = [
     { include = "hackathon" },
+    { include = "app" },
+    { include = "config" }, 
 ]
 
 [tool.poetry.dependencies]
