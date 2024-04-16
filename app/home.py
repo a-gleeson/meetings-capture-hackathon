@@ -29,15 +29,13 @@ def image_to_base64(image):
     return img_str
 
 
+@st.cache_data
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode("utf-8")
+
+
 cwd = os.getcwd()
-data_path = os.path.join(
-    cwd,
-    "data",
-    "clean_transcripts",
-    "Sample Transcript.csv",
-)
-transcript = Transcript(data_path)
-data = transcript.data
 image_path = os.path.join(cwd, "static", "images", "gov_uk.png")
 image = Image.open(image_path)
 
@@ -163,4 +161,12 @@ st.markdown(
 )
 # * [Initialise the data](/initialise_the_data) will load in the previous vacancies from s3.
 
-st.data_editor(data, hide_index=True)
+with st.container():
+    data_path = st.file_uploader(label="#### Transcript `.csv`")
+    if data_path is not None:
+        transcript = Transcript(data_path)
+        data = transcript.data
+        st_transcript_table = st.data_editor(data, hide_index=True)
+        # st.button("Update transcript", on_click=transcript.update_data(st_transcript_table))
+        csv = convert_df(st_transcript_table)
+        st.download_button("Download", data=csv, file_name="transcript_download.csv")
