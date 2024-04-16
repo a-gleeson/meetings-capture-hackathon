@@ -133,6 +133,14 @@ Pre commit hooks run after commit to fix up formatting and other issues. Install
 pre-commit install
 ```
 
+You can then run:
+
+```sh
+pre-commit run --all-files
+```
+
+and commit any changes made to files in the repo.
+
 ## 6. Add secrets into .env
 
 - Run `cp .env.template .env` and update the secrets.
