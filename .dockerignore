@@ -1,0 +1,7 @@
+*.env
+models
+models/*
+data
+data/*
+notebooks
+notebooks/*
