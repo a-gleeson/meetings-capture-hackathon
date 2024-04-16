@@ -52,14 +52,10 @@ class Processor(ABC):
         else:
             df["metadata"] = {}
 
-        df["metadata"] = df["metadata"].apply(
-            lambda x: None if pd.isna(x) else x
-        )
+        df["metadata"] = df["metadata"].apply(lambda x: None if pd.isna(x) else x)
 
         docs = df.apply(
-            lambda row: Document(
-                page_content=row["content"], metadata=row["metadata"]
-            ),
+            lambda row: Document(page_content=row["content"], metadata=row["metadata"]),
             axis=1,
         ).tolist()
 
@@ -127,14 +123,8 @@ class ProcessorFactory:
         """
         extension = file_path.split(".")[-1].lower()
         if extension == "csv":
-            return CSVProcessor(
-                source_column, metadata_columns, content_columns
-            )
+            return CSVProcessor(source_column, metadata_columns, content_columns)
         elif extension == "parquet":
-            return ParquetProcessor(
-                source_column, metadata_columns, content_columns
-            )
+            return ParquetProcessor(source_column, metadata_columns, content_columns)
         else:
-            ValueError(
-                f"File type {extension} does not have a supported processor"
-            )
+            ValueError(f"File type {extension} does not have a supported processor")
