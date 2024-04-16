@@ -128,17 +128,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Add another header section below the alpha box
-st.markdown(
-    """
-            <h2 style="font-family: Arial, Helvetica, sans-serif; color: black;">Hackathon</h2>
-            """,
-    unsafe_allow_html=True,
-)
-
-# Add the normal line (replacing the thick blue line)
-st.markdown('<div class="normal-line"></div>', unsafe_allow_html=True)
-
 # Apply custom styles to the sidebar using st.markdown
 sidebar_css = """
     <style>
@@ -152,11 +141,15 @@ sidebar_css = """
 st.markdown(sidebar_css, unsafe_allow_html=True)
 st.sidebar.success("Select a page above")
 
-
-st.markdown(
-    """\
-    ## What can you do?
-    * [](/) 
-"""
-)
 # * [Initialise the data](/initialise_the_data) will load in the previous vacancies from s3.
+
+with st.container():
+    data_path = st.file_uploader(label="#### Transcript `.csv`")
+    if data_path is not None:
+        transcript = Transcript(data_path)
+        data = transcript.data
+        st_transcript_table = st.data_editor(data, hide_index=True)
+        # st.button("Update transcript", on_click=transcript.update_data(st_transcript_table))
+        csv = convert_df(st_transcript_table)
+        # st.download_button("Update transcript", data=csv, file_name=data_path)
+        st.download_button("Download", data=csv, file_name="transcript_download.csv")
