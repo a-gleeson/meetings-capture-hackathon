@@ -2,7 +2,6 @@ import base64
 import io
 import os
 
-import pandas as pd
 import streamlit as st
 from PIL import Image
 
