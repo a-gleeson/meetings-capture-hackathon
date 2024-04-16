@@ -28,6 +28,12 @@ def image_to_base64(image):
     return img_str
 
 
+@st.cache_data
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode("utf-8")
+
+
 cwd = os.getcwd()
 logo_path = os.path.join(cwd, "static", "images", "logo.png")
 logo = Image.open(logo_path)
