@@ -78,16 +78,32 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-data_path = st.file_uploader(label="#### Upload Transcript")
-if data_path is not None:
-    transcript = Transcript(data_path)
-    data = transcript.data
+st.session_state["transcript_uploaded"] = False
 
-    with st.expander("#### Edit meeting attendees", expanded=False):
+with st.expander("#### Upload audio recording", expanded=False):
+    audio_file = st.file_uploader(
+        "Upload meeting recording audio file", type=[".mp3", ".wav", ".m4a"]
+    )
+    if audio_file is not None:
+        audio_bytes = audio_file.read()
+        st.audio(audio_bytes, format="audio/wav")
+
+with st.expander("#### Upload transcript", expanded=False):
+    data_path = st.file_uploader(label="Upload transcript")
+    if data_path is not None:
+        transcript = Transcript(data_path)
+        data = transcript.data
+        st.session_state["transcript_uploaded"] = True
+
+with st.expander("#### Edit meeting attendees", expanded=False):
+    if st.session_state.transcript_uploaded:
         speaker_list = data["Speaker"].unique()
         edited_speaker_list = st.data_editor(speaker_list, num_rows="dynamic")
+    else:
+        st.error("Upload meeting transcript", icon="⚠️")
 
-    with st.expander("#### Edit meeting transcript", expanded=False):
+with st.expander("#### Edit meeting transcript", expanded=False):
+    if st.session_state.transcript_uploaded:
         st_transcript_table = st.data_editor(
             data,
             hide_index=True,
@@ -109,3 +125,5 @@ if data_path is not None:
                 data=str(transcript),
                 file_name="transcript_download.txt",
             )
+    else:
+        st.error("Upload meeting transcript", icon="⚠️")
