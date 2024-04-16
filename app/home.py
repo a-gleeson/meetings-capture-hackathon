@@ -81,7 +81,7 @@ with col1:
 with col2:
     st.markdown(
         "<p text-align: justify; text-justify: inter-word;>"
-        "This is a tool to take in meeting recordings and generate transcripts, leveraging the power of AI."
+        "This is a tool to take in meeting recordings and generate transcripts, leveraging the power of AI. "
         "Once a transcript is generated, the app can be used to make edits to timestamps, speakers, and items.</p>",
         unsafe_allow_html=True,
     )
