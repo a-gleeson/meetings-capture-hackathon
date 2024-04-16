@@ -37,3 +37,5 @@ AWS_SERVICE_ROLE_ARN = os.environ.get("AWS_SERVICE_ROLE_ARN", "arn:aws:iam::")
 AWS_SAGEMAKER_ENDPOINT = os.environ.get(
     "AWS_SAGEMAKER_ENDPOINT", "llama-meta-textgeneration"
 )
+
+MODEL = "claude-v3-sonnet"
