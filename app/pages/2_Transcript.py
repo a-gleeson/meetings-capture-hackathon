@@ -73,7 +73,7 @@ with header:
 
 st.markdown(
     """
-            <h2 style="font-family: Arial, Helvetica, sans-serif; color: black;">Edit Meeting Transcript</h2>
+            <h2 style="font-family: Arial, Helvetica, sans-serif; color: black;">Edit meeting transcript</h2>
             """,
     unsafe_allow_html=True,
 )
