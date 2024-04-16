@@ -13,9 +13,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 from folium.plugins import StripePattern
-from langchain.embeddings.sentence_transformer import (
-    SentenceTransformerEmbeddings,
-)
+from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from streamlit.runtime import get_instance
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 from streamlit_folium import folium_static
@@ -37,7 +35,7 @@ from config.settings import (
 )
 
 # from hackathon.llm.chain_config import (
-
+# # Empty for now
 # )
 from hackathon.llm.llm import LLama2, SagemakerHostedLLM
 from hackathon.llm.llm_handler import LLMRunner
@@ -77,14 +75,10 @@ def get_password():
 
     # Create a Secrets Manager client
     session = boto3.session.Session()
-    client = session.client(
-        service_name="secretsmanager", region_name=AWS_REGION
-    )
+    client = session.client(service_name="secretsmanager", region_name=AWS_REGION)
 
     try:
-        get_secret_value_response = client.get_secret_value(
-            SecretId=secret_name
-        )
+        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
     except Exception as e:
         # For a list of exceptions thrown, see
         # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
