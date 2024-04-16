@@ -152,4 +152,14 @@ with st.container():
         # st.button("Update transcript", on_click=transcript.update_data(st_transcript_table))
         csv = convert_df(st_transcript_table)
         # st.download_button("Update transcript", data=csv, file_name=data_path)
-        st.download_button("Download", data=csv, file_name="transcript_download.csv")
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            st.download_button(
+                "Download csv", data=csv, file_name="transcript_download.csv"
+            )
+        with col2:
+            st.download_button(
+                "Download txt",
+                data=str(transcript),
+                file_name="transcript_download.txt",
+            )
