@@ -40,6 +40,8 @@ if "summary_generated" not in st.session_state:
     st.session_state.summary_generated = False
 if "transcript_uploaded" not in st.session_state:
     st.session_state.transcript_uploaded = False
+if "transcript_uploaded" not in st.session_state:
+    st.session_state.transcript_uploaded = False
 
 
 cwd = os.getcwd()
