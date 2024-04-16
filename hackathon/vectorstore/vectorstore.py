@@ -64,7 +64,9 @@ class ChromaStore(VectorStore):
         return self.vectorstore.get(limit=limit)
 
     def search_with_score(self, query: str):
-        return self.vectorstore.similarity_search_with_relevance_scores(query, k=100)
+        return self.vectorstore.similarity_search_with_relevance_scores(
+            query, k=100
+        )
 
     def similarity_search_with_filter(
         self, query: str, filter: Optional[Dict[str, str]]
@@ -157,7 +159,9 @@ class OpenSearchStore(VectorStore):
         return self.vectorstore.get(limit=limit)
 
     def retrieve_data_with_relevance_scores(self, query):
-        return self.vectorstore.similarity_search_with_relevance_scores(query, k=10)
+        return self.vectorstore.similarity_search_with_relevance_scores(
+            query, k=10
+        )
 
 
 class VectorStoreClient(ABC):
@@ -196,7 +200,9 @@ class ChromaClient(VectorStoreClient):
     def store_data(self, documents):
         logger.info("storing docs %s in Chroma", len(documents))
         response = self.client.add_documents(documents)
-        logger.info("Put docs %s in Chroma with response %s", len(documents), response)
+        logger.info(
+            "Put docs %s in Chroma with response %s", len(documents), response
+        )
         self.client.persist()
         return response
 
@@ -271,7 +277,9 @@ class OpensearchClientStore(VectorStoreClient):
         Args:
             Documents (list[Document]): list of documents to store into opensearch.
         """
-        logger.info(f"Starting Opensearch ingestion of {len(documents)} documents")
+        logger.info(
+            f"Starting Opensearch ingestion of {len(documents)} documents"
+        )
         for batch in self._split_into_batches(documents):
             try:
                 response = self.vectorstore.add_documents(batch)
