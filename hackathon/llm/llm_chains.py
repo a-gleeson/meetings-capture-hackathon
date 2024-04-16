@@ -27,10 +27,7 @@ class LLMChain(ABC):
             llm (LLM): to attach to the LLMChain
         """
         self.chain: RunnableSequence = (
-            config.var_input
-            | config.prompt
-            | llm.get_llm()
-            | config.out_parser()
+            config.var_input | config.prompt | llm.get_llm() | config.out_parser()
         )
 
     def invoke_query(self, query: Dict):

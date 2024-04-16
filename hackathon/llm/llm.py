@@ -36,9 +36,7 @@ class LLama2(LLM):
         self, llm_model_path: str, stop_sequences: List[str] = ["ANSWER:"]
     ) -> None:
         self.llm_model_path = llm_model_path
-        self.callback_manager = CallbackManager(
-            [StreamingStdOutCallbackHandler()]
-        )
+        self.callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
         self.stop_sequences = stop_sequences
         self.initialise_llm()
 
