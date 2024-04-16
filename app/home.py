@@ -1,3 +1,5 @@
+import os
+
 import streamlit as st
 
 from config.logging import setup_logging
@@ -72,3 +74,21 @@ st.markdown(
     unsafe_allow_html=True,
 )
 st.write("Select a page to the left to get started.")
+
+col1, col2 = st.columns([1, 1])
+with col1:
+    st.image(os.path.join("static", "images", "cabinet-meeting.png"))
+with col2:
+    st.markdown(
+        "<p text-align: justify; text-justify: inter-word;>"
+        "This is a tool to take in meeting recordings and generate transcripts, leveraging the power of AI."
+        "Once a transcript is generated, the app can be used to make edits to timestamps, speakers, and items.</p>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        "<p text-align: justify; text-justify: inter-word;>"
+        "The app further utilises LLMs to generate iterative summaries of topics discussed during meetings, "
+        "and identifies key facts and statistics raised during the meeting that need to be scrutinised further."
+        "</p>",
+        unsafe_allow_html=True,
+    )
