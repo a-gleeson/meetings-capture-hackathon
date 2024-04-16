@@ -33,6 +33,8 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = ""
 if "summary_generated" not in st.session_state:
     st.session_state.summary_generated = False
+if "transcript_uploaded" not in st.session_state:
+    st.session_state.transcript_uploaded = False
 
 
 cwd = os.getcwd()
@@ -103,22 +105,34 @@ def llm_summarise() -> str:
 
 
 def query_llm(prompt: str) -> str:
-
     return f'Hello! I am *not* an LLM! James created me as an "artificial artificial intelligence" - this is the only thing I can say. ({dt.datetime.now()})'
 
 
-with st.container():
-    data_path = st.file_uploader(label="#### Upload transcript:")
+with st.expander("#### Upload transcript", expanded=False):
+    data_path = st.file_uploader(label="Upload transcript:")
     if data_path is not None:
         transcript = Transcript(data_path)
         data = str(transcript)
-        st_summarise_button = st.button("Summarise")
+        st.session_state.transcript_uploaded = True
+
+with st.expander("#### Generate summary", expanded=False):
+    if not st.session_state.transcript_uploaded:
+        st.error("Upload meeting transcript", icon="⚠️")
+    else:
+        st_summarise_button = st.button("Generate meeting summary")
         if st_summarise_button or st.session_state.summary_generated:
             st.session_state.summary_generated = True
             st.markdown(llm_summarise())
-            prompt = st.text_input(label="Enter query here:")
+            prompt = st.text_input(label="Enter query here:", placeholder="How ")
             st_query_button = st.button("Query LLM")
             if st_query_button and prompt != "":
                 st.session_state.chat_history += f"User: {prompt}\n\n"
                 st.session_state.chat_history += f"Claude: {query_llm(prompt)}\n\n"
                 st.markdown(st.session_state.chat_history)
+            # TODO: Add button to download summary as txt file
+
+with st.expander("#### Identify facts", expanded=False):
+    st.write("Work in progress")
+
+with st.expander("#### Generate glossary", expanded=False):
+    st.write("Work in progress")
