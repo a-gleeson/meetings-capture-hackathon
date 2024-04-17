@@ -9,7 +9,7 @@ from PIL import Image
 
 from config.logging import setup_logging
 from config.settings import ENV
-from hackathon.api import fact_check_api, glossery_api, summary_api
+from hackathon.api import conversation_api, fact_check_api, glossery_api, summary_api
 from hackathon.streamlit.utils import check_password
 from hackathon.transcripts.transcript_handling import Transcript
 
@@ -110,7 +110,6 @@ def llm_summarise(transcript: str) -> str:
     post_response = summary_api.invoke_post(transcript)
     fact_check_response = fact_check_api.invoke_post(transcript)
     conversation_response = conversation_api.invoke_post(transcript)
-    conversation_response = conversation_api.invoke_post(transcript)
     time.sleep(15)
 
     get_summary_response = summary_api.invoke_get(post_response["conversationId"])
@@ -118,14 +117,13 @@ def llm_summarise(transcript: str) -> str:
 
     post_glossary = glossery_api.invoke_post(get_summary_response)
     time.sleep(25)
-    time.sleep(25)
     get_glossary = glossery_api.invoke_get(post_glossary["conversationId"])
-    conversation_api.invoke_get(conversation_response["conversationId"])
     conversation_api.invoke_get(conversation_response["conversationId"])
     return {
         "summary": get_summary_response,
         "facts": get_fact_response,
         "glossary": get_glossary,
+        "conversationConversationId": conversation_response["conversationId"],
         "conversationConversationId": conversation_response["conversationId"],
     }
 
