@@ -3,6 +3,7 @@ import datetime as dt
 import io
 import os
 import time
+import time
 
 import streamlit as st
 from PIL import Image
@@ -10,12 +11,14 @@ from PIL import Image
 from config.logging import setup_logging
 from config.settings import ENV
 from hackathon.api import conversation_api, fact_check_api, glossery_api, summary_api
+from hackathon.api import conversation_api, fact_check_api, glossery_api, summary_api
 from hackathon.streamlit.utils import check_password
 from hackathon.transcripts.transcript_handling import Transcript
 
 get_logger = setup_logging()
 logger = get_logger(__name__)
 
+st.set_page_config(page_title="QuickQuill", page_icon="memo", layout="wide")
 st.set_page_config(page_title="QuickQuill", page_icon="memo", layout="wide")
 
 # Password protection of pages
@@ -106,6 +109,7 @@ def llm_summarise(transcript: str) -> str:
     post_response = summary_api.invoke_post(transcript)
     fact_check_response = fact_check_api.invoke_post(transcript)
     conversation_response = conversation_api.invoke_post(transcript)
+    conversation_response = conversation_api.invoke_post(transcript)
     time.sleep(15)
 
     get_summary_response = summary_api.invoke_get(post_response["conversationId"])
@@ -113,7 +117,9 @@ def llm_summarise(transcript: str) -> str:
 
     post_glossary = glossery_api.invoke_post(get_summary_response)
     time.sleep(25)
+    time.sleep(25)
     get_glossary = glossery_api.invoke_get(post_glossary["conversationId"])
+    conversation_api.invoke_get(conversation_response["conversationId"])
     conversation_api.invoke_get(conversation_response["conversationId"])
     return {
         "summary": get_summary_response,
@@ -123,9 +129,9 @@ def llm_summarise(transcript: str) -> str:
     }
 
 
+
 def query_llm(prompt: str, transcript: str, conversationId) -> str:
-    query = f"With knowledge of this transcript:\n{transcript}\n\nAnswer this query: {prompt}"
-    print(query)
+    query = f"With knowledge of this transcript:\n{{transcript}}\n\nAnswer this query: {prompt}"
     query_response = conversation_api.invoke_post(query, conversationId)
     time.sleep(15)
     chat_response = conversation_api.invoke_get(query_response["conversationId"])
