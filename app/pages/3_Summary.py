@@ -2,23 +2,21 @@ import base64
 import datetime as dt
 import io
 import os
-import time 
+import time
 
 import streamlit as st
 from PIL import Image
 
 from config.logging import setup_logging
 from config.settings import ENV
+from hackathon.api import conversation_api, fact_check_api, glossery_api, summary_api
 from hackathon.streamlit.utils import check_password
 from hackathon.transcripts.transcript_handling import Transcript
-from hackathon.api import summary_api
-from hackathon.api import fact_check_api
-from hackathon.api import glossery_api
 
 get_logger = setup_logging()
 logger = get_logger(__name__)
 
-st.set_page_config(page_title="Meeting Record Creator", page_icon="memo", layout="wide")
+st.set_page_config(page_title="QuickQuill", page_icon="memo", layout="wide")
 
 # Password protection of pages
 if ENV.upper() == "PROD" and not check_password():
@@ -107,23 +105,30 @@ st.markdown(
 def llm_summarise(transcript: str) -> str:
     post_response = summary_api.invoke_post(transcript)
     fact_check_response = fact_check_api.invoke_post(transcript)
+    conversation_response = conversation_api.invoke_post(transcript)
     time.sleep(15)
 
     get_summary_response = summary_api.invoke_get(post_response["conversationId"])
     get_fact_response = fact_check_api.invoke_get(fact_check_response["conversationId"])
 
     post_glossary = glossery_api.invoke_post(get_summary_response)
-    time.sleep(15)
+    time.sleep(25)
     get_glossary = glossery_api.invoke_get(post_glossary["conversationId"])
+    conversation_api.invoke_get(conversation_response["conversationId"])
     return {
-        "summary" : get_summary_response,
-        "facts" : get_fact_response,
-        "glossary" : get_glossary
-        }
+        "summary": get_summary_response,
+        "facts": get_fact_response,
+        "glossary": get_glossary,
+        "conversationConversationId": conversation_response["conversationId"],
+    }
 
 
-def query_llm(prompt: str) -> str:
-    return f'Hello! I am *not* an LLM! James created me as an "artificial artificial intelligence" - this is the only thing I can say. ({dt.datetime.now()})'
+def query_llm(prompt: str, transcript: str, conversationId) -> str:
+    query = f"With knowledge of this transcript:\n{{transcript}}\n\nAnswer this query: {prompt}"
+    query_response = conversation_api.invoke_post(query, conversationId)
+    time.sleep(15)
+    chat_response = conversation_api.invoke_get(query_response["conversationId"])
+    return chat_response
 
 
 with st.expander("#### Upload transcript", expanded=False):
@@ -140,14 +145,17 @@ with st.expander("#### Generate summary", expanded=False):
     else:
         st_summarise_button = st.button("Generate meeting summary")
         if st_summarise_button or st.session_state.summary_generated:
+            if not st.session_state.summary_generated:
+                returned_data = llm_summarise(transcript=data)
+                st.session_state.returned_data = returned_data
+            returned_data = st.session_state.returned_data
             st.session_state.summary_generated = True
-            returned_data = llm_summarise(transcript=data)
             st.markdown(returned_data["summary"])
             prompt = st.text_input(label="Enter query here:", placeholder="How ")
             st_query_button = st.button("Query LLM")
             if st_query_button and prompt != "":
                 st.session_state.chat_history += f"User: {prompt}\n\n"
-                st.session_state.chat_history += f"Claude: {query_llm(prompt)}\n\n"
+                st.session_state.chat_history += f"Claude: {query_llm(prompt, data, conversationId=returned_data['conversationConversationId'])}\n\n"
                 st.markdown(st.session_state.chat_history)
             # TODO: Add button to download summary as txt file
 
