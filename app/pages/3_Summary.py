@@ -113,9 +113,16 @@ def llm_summarise(transcript: str) -> str:
 
     post_glossary = glossery_api.invoke_post(get_summary_response)
     time.sleep(25)
+    time.sleep(25)
     get_glossary = glossery_api.invoke_get(post_glossary["conversationId"])
     conversation_api.invoke_get(conversation_response["conversationId"])
+    conversation_api.invoke_get(conversation_response["conversationId"])
     return {
+        "summary": get_summary_response,
+        "facts": get_fact_response,
+        "glossary": get_glossary,
+        "conversationConversationId": conversation_response["conversationId"],
+    }
         "summary": get_summary_response,
         "facts": get_fact_response,
         "glossary": get_glossary,
@@ -124,8 +131,7 @@ def llm_summarise(transcript: str) -> str:
 
 
 def query_llm(prompt: str, transcript: str, conversationId) -> str:
-    query = f"With knowledge of this transcript:\n{transcript}\n\nAnswer this query: {prompt}"
-    print(query)
+    query = f"With knowledge of this transcript:\n{{transcript}}\n\nAnswer this query: {prompt}"
     query_response = conversation_api.invoke_post(query, conversationId)
     time.sleep(15)
     chat_response = conversation_api.invoke_get(query_response["conversationId"])
@@ -150,12 +156,17 @@ with st.expander("#### Generate summary", expanded=False):
                 returned_data = llm_summarise(transcript=data)
                 st.session_state.returned_data = returned_data
             returned_data = st.session_state.returned_data
+            if not st.session_state.summary_generated:
+                returned_data = llm_summarise(transcript=data)
+                st.session_state.returned_data = returned_data
+            returned_data = st.session_state.returned_data
             st.session_state.summary_generated = True
             st.markdown(returned_data["summary"])
             prompt = st.text_input(label="Enter query here:", placeholder="How ")
             st_query_button = st.button("Query LLM")
             if st_query_button and prompt != "":
                 st.session_state.chat_history += f"User: {prompt}\n\n"
+                st.session_state.chat_history += f"Claude: {query_llm(prompt, data, conversationId=returned_data['conversationConversationId'])}\n\n"
                 st.session_state.chat_history += f"Claude: {query_llm(prompt, data, conversationId=returned_data['conversationConversationId'])}\n\n"
                 st.markdown(st.session_state.chat_history)
             # TODO: Add button to download summary as txt file
