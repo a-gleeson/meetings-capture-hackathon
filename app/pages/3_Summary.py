@@ -14,6 +14,8 @@ from hackathon.api import conversation_api, fact_check_api, glossery_api, summar
 from hackathon.streamlit.utils import check_password
 from hackathon.transcripts.transcript_handling import Transcript
 from hackathon.api import summary_api
+from hackathon.api import fact_check_api
+from hackathon.api import glossery_api
 
 get_logger = setup_logging()
 logger = get_logger(__name__)
