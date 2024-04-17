@@ -137,7 +137,8 @@ def llm_summarise(transcript: str) -> str:
 
 
 def query_llm(prompt: str, transcript: str, conversationId) -> str:
-    query = f"With knowledge of this transcript:\n{{transcript}}\n\nAnswer this query: {prompt}"
+    query = f"With knowledge of this transcript:\n{transcript}\n\nAnswer this query: {prompt}"
+    print(query)
     query_response = conversation_api.invoke_post(query, conversationId)
     time.sleep(15)
     chat_response = conversation_api.invoke_get(query_response["conversationId"])
