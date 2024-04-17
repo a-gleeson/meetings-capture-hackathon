@@ -2,25 +2,20 @@ import base64
 import datetime as dt
 import io
 import os
-import time 
+import time
 
 import streamlit as st
 from PIL import Image
 
 from config.logging import setup_logging
 from config.settings import ENV
-from hackathon.api import conversation_api, fact_check_api, glossery_api, summary_api
-from hackathon.api import conversation_api, fact_check_api, glossery_api, summary_api
+from hackathon.api import fact_check_api, glossery_api, summary_api
 from hackathon.streamlit.utils import check_password
 from hackathon.transcripts.transcript_handling import Transcript
-from hackathon.api import summary_api
-from hackathon.api import fact_check_api
-from hackathon.api import glossery_api
 
 get_logger = setup_logging()
 logger = get_logger(__name__)
 
-st.set_page_config(page_title="QuickQuill", page_icon="memo", layout="wide")
 st.set_page_config(page_title="QuickQuill", page_icon="memo", layout="wide")
 
 # Password protection of pages
@@ -47,6 +42,8 @@ if "transcript_uploaded" not in st.session_state:
 
 
 cwd = os.getcwd()
+logo_path = os.path.join(cwd, "static", "images", "logo.png")
+image = Image.open(logo_path)
 logo_path = os.path.join(cwd, "static", "images", "logo.png")
 image = Image.open(logo_path)
 
