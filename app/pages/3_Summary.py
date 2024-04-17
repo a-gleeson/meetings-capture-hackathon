@@ -124,7 +124,8 @@ def llm_summarise(transcript: str) -> str:
 
 
 def query_llm(prompt: str, transcript: str, conversationId) -> str:
-    query = f"With knowledge of this transcript:\n{{transcript}}\n\nAnswer this query: {prompt}"
+    query = f"With knowledge of this transcript:\n{transcript}\n\nAnswer this query: {prompt}"
+    print(query)
     query_response = conversation_api.invoke_post(query, conversationId)
     time.sleep(15)
     chat_response = conversation_api.invoke_get(query_response["conversationId"])
@@ -160,9 +161,11 @@ with st.expander("#### Generate summary", expanded=False):
             # TODO: Add button to download summary as txt file
 
 with st.expander("#### Identify facts", expanded=False):
-    if returned_data.get("facts"):
+    if returned_data.get("facts") and st.session_state.summary_generated:
+        returned_data = st.session_state.returned_data
         st.write(returned_data["facts"])
 
 with st.expander("#### Generate glossary", expanded=False):
-    if returned_data.get("glossary"):
+    if returned_data.get("glossary") and st.session_state.summary_generated:
+        returned_data = st.session_state.returned_data
         st.write(returned_data["glossary"])
