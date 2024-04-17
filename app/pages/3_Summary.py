@@ -12,6 +12,8 @@ from config.settings import ENV
 from hackathon.streamlit.utils import check_password
 from hackathon.transcripts.transcript_handling import Transcript
 from hackathon.api import summary_api
+from hackathon.api import fact_check_api
+from hackathon.api import glossery_api
 
 get_logger = setup_logging()
 logger = get_logger(__name__)
@@ -104,11 +106,20 @@ st.markdown(
 
 def llm_summarise(transcript: str) -> str:
     post_response = summary_api.invoke_post(transcript)
-    
+    fact_check_response = fact_check_api.invoke_post(transcript)
     time.sleep(15)
 
-    get_response = summary_api.invoke_get(post_response["conversationId"])
-    return get_response
+    get_summary_response = summary_api.invoke_get(post_response["conversationId"])
+    get_fact_response = fact_check_api.invoke_get(fact_check_response["conversationId"])
+
+    post_glossary = glossery_api.invoke_post(get_summary_response)
+    time.sleep(15)
+    get_glossary = glossery_api.invoke_get(post_glossary["conversationId"])
+    return {
+        "summary" : get_summary_response,
+        "facts" : get_fact_response,
+        "glossary" : get_glossary
+        }
 
 
 def query_llm(prompt: str) -> str:
@@ -122,6 +133,7 @@ with st.expander("#### Upload transcript", expanded=False):
         data = str(transcript)
         st.session_state.transcript_uploaded = True
 
+returned_data = {}
 with st.expander("#### Generate summary", expanded=False):
     if not st.session_state.transcript_uploaded:
         st.error("Upload meeting transcript", icon="⚠️")
@@ -129,7 +141,8 @@ with st.expander("#### Generate summary", expanded=False):
         st_summarise_button = st.button("Generate meeting summary")
         if st_summarise_button or st.session_state.summary_generated:
             st.session_state.summary_generated = True
-            st.markdown(llm_summarise(transcript=data))
+            returned_data = llm_summarise(transcript=data)
+            st.markdown(returned_data["summary"])
             prompt = st.text_input(label="Enter query here:", placeholder="How ")
             st_query_button = st.button("Query LLM")
             if st_query_button and prompt != "":
@@ -139,7 +152,9 @@ with st.expander("#### Generate summary", expanded=False):
             # TODO: Add button to download summary as txt file
 
 with st.expander("#### Identify facts", expanded=False):
-    st.write("Work in progress")
+    if returned_data.get("facts"):
+        st.write(returned_data["facts"])
 
 with st.expander("#### Generate glossary", expanded=False):
-    st.write("Work in progress")
+    if returned_data.get("glossary"):
+        st.write(returned_data["glossary"])
