@@ -14,7 +14,7 @@ from hackathon.transcripts.transcript_handling import Transcript
 get_logger = setup_logging()
 logger = get_logger(__name__)
 
-st.set_page_config(page_title="Meeting Record Creator", page_icon="memo", layout="wide")
+st.set_page_config(page_title="QuickQuill", page_icon="memo", layout="wide")
 
 # Password protection of pages
 if ENV.upper() == "PROD" and not check_password():
@@ -65,7 +65,7 @@ with header:
     st.markdown(
         f"""
         <div class="header">
-            <p>Meeting Record Creator</p>
+            <p>QuickQuill</p>
         </div>
     """,
         unsafe_allow_html=True,
