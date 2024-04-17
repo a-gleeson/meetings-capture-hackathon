@@ -1,6 +1,9 @@
+import base64
+import io
 import os
 
 import streamlit as st
+from PIL import Image
 
 from config.logging import setup_logging
 from config.settings import ENV
@@ -9,11 +12,24 @@ from hackathon.streamlit.utils import check_password
 get_logger = setup_logging()
 logger = get_logger(__name__)
 
-st.set_page_config(page_title="Meeting Record Creator", page_icon="memo", layout="wide")
+st.set_page_config(page_title="QuickQuill", page_icon="memo", layout="wide")
 
 # Password protection of pages
 if ENV.upper() == "PROD" and not check_password():
     st.stop()  # Do not continue if check_password is not True.
+
+
+# Image loading
+def image_to_base64(image):
+    buffered = io.BytesIO()
+    image.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    return img_str
+
+
+cwd = os.getcwd()
+logo_path = os.path.join(cwd, "static", "images", "logo.png")
+logo = Image.open(logo_path)
 
 header_css = """
     <style>
@@ -23,15 +39,16 @@ header_css = """
             padding: 0px;
             display: flex;
             align-items: center;
-            height: 60px; /* Fixed height for the header */
+            height: 160px; /* Fixed height for the header */
             text-align: center;
         }
         .header img {
-            margin-right: 120px;  /* Adjust spacing between image and text */
+            margin-left: 10px;
+            margin-right: 100px;  /* Adjust spacing between image and text */
         }
         .header p {
             margin: 0;
-            font-size: 25px; /* Adjust font size as needed */
+            font-size: 80px; /* Adjust font size as needed */
             line-height: 1.0; /* Adjust line height to match image height */
             font-weight: bold; /* Make text bold */
             font-family: Arial, Helvetica, sans-serif; /* Set font family */
@@ -54,6 +71,7 @@ header_css = """
 """
 
 st.markdown(header_css, unsafe_allow_html=True)
+
 # Create a header section
 header = st.container()
 with header:
@@ -61,7 +79,8 @@ with header:
     st.markdown(
         f"""
         <div class="header">
-            <p>Meeting Record Creator</p>
+            <img src="data:image/png;base64,{image_to_base64(logo)}" width="140">
+            <p>QuickQuill</p>
         </div>
     """,
         unsafe_allow_html=True,
@@ -69,11 +88,12 @@ with header:
 
 st.markdown(
     """
-            <h2 style="font-family: Arial, Helvetica, sans-serif; color: black;">Welcome!</h2>
+            <h2 style="font-family: Arial, Helvetica, sans-serif; color: black;">Create faster, easier, better meeting records.</h2>
             """,
     unsafe_allow_html=True,
 )
-st.write("Select a page to the left to get started.")
+
+st.markdown("##")
 
 col1, col2 = st.columns([1, 1])
 with col1:

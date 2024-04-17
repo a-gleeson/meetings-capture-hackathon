@@ -2,23 +2,21 @@ import base64
 import datetime as dt
 import io
 import os
-import time 
+import time
 
 import streamlit as st
 from PIL import Image
 
 from config.logging import setup_logging
 from config.settings import ENV
+from hackathon.api import fact_check_api, glossery_api, summary_api
 from hackathon.streamlit.utils import check_password
 from hackathon.transcripts.transcript_handling import Transcript
-from hackathon.api import summary_api
-from hackathon.api import fact_check_api
-from hackathon.api import glossery_api
 
 get_logger = setup_logging()
 logger = get_logger(__name__)
 
-st.set_page_config(page_title="Meeting Record Creator", page_icon="memo", layout="wide")
+st.set_page_config(page_title="QuickQuill", page_icon="memo", layout="wide")
 
 # Password protection of pages
 if ENV.upper() == "PROD" and not check_password():
@@ -42,8 +40,8 @@ if "transcript_uploaded" not in st.session_state:
 
 
 cwd = os.getcwd()
-image_path = os.path.join(cwd, "static", "images", "gov_uk.png")
-image = Image.open(image_path)
+logo_path = os.path.join(cwd, "static", "images", "logo.png")
+image = Image.open(logo_path)
 
 header_css = """
     <style>
@@ -91,7 +89,7 @@ with header:
     st.markdown(
         f"""
         <div class="header">
-            <p>Meeting Record Creator</p>
+            <p>QuickQuill</p>
         </div>
     """,
         unsafe_allow_html=True,
@@ -116,10 +114,10 @@ def llm_summarise(transcript: str) -> str:
     time.sleep(15)
     get_glossary = glossery_api.invoke_get(post_glossary["conversationId"])
     return {
-        "summary" : get_summary_response,
-        "facts" : get_fact_response,
-        "glossary" : get_glossary
-        }
+        "summary": get_summary_response,
+        "facts": get_fact_response,
+        "glossary": get_glossary,
+    }
 
 
 def query_llm(prompt: str) -> str:
