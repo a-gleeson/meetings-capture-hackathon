@@ -9,19 +9,13 @@ from PIL import Image
 
 from config.logging import setup_logging
 from config.settings import ENV
-from hackathon.api import conversation_api, fact_check_api, glossery_api, summary_api
-from hackathon.streamlit.utils import check_password
+from hackathon.llm.llm_api import conversation_api, fact_check_api, glossery_api, summary_api
 from hackathon.transcripts.transcript_handling import Transcript
 
 get_logger = setup_logging()
 logger = get_logger(__name__)
 
 st.set_page_config(page_title="QuickQuill", page_icon="memo", layout="wide")
-
-# Password protection of pages
-if ENV.upper() == "PROD" and not check_password():
-    st.stop()  # Do not continue if check_password is not True.
-
 
 # Image loading
 def image_to_base64(image):
@@ -106,7 +100,7 @@ def llm_summarise(transcript: str) -> str:
     post_response = summary_api.invoke_post(transcript)
     fact_check_response = fact_check_api.invoke_post(transcript)
     conversation_response = conversation_api.invoke_post(transcript)
-    time.sleep(15)
+    time.sleep(20)
 
     get_summary_response = summary_api.invoke_get(post_response["conversationId"])
     get_fact_response = fact_check_api.invoke_get(fact_check_response["conversationId"])
@@ -138,8 +132,8 @@ def query_llm(prompt: str, transcript: str, conversationId) -> str:
     chat_response = conversation_api.invoke_get(query_response["conversationId"])
     return chat_response
 
-
-with st.expander("#### Upload transcript", expanded=False):
+data= ""
+with st.expander("#### Upload transcript", expanded=True):
     data_path = st.file_uploader(label="Upload transcript:")
     if data_path is not None:
         transcript = Transcript(data_path)
@@ -147,7 +141,7 @@ with st.expander("#### Upload transcript", expanded=False):
         st.session_state.transcript_uploaded = True
 
 returned_data = {}
-with st.expander("#### Generate summary", expanded=False):
+with st.expander("#### Generate summary", expanded=True):
     if not st.session_state.transcript_uploaded:
         st.error("Upload meeting transcript", icon="⚠️")
     else:

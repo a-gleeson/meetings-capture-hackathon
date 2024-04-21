@@ -1,5 +1,3 @@
-import time
-
 import requests
 
 from config.settings import (
@@ -14,9 +12,7 @@ from config.settings import (
     SUMMARISE_URL,
 )
 
-
 class API:
-
     def __init__(self, api_key, url):
         self.api_key = api_key
         self.url = url

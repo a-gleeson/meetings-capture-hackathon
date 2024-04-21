@@ -63,7 +63,6 @@ volumes:
   opensearch-data1:
   opensearch-data2:
   data-volume: {}
-  s3-volume: {}
 
 networks:
   opensearch-net:

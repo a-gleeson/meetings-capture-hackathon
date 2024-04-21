@@ -1,7 +1,6 @@
 ﻿# hackathon
 
 
-
 ## Workflow
 
 ## How it works (for the hackathon)
@@ -11,11 +10,6 @@
 
 
 # Set up 
-
-https://python.langchain.com/docs/integrations/chat/llama2_chat
-https://python.langchain.com/docs/templates/llama2-functions
-https://huggingface.co/blog/llama2#how-to-prompt-llama-2 
-https://python.langchain.com/docs/integrations/llms/llamacpp#grammars
 
 ## 1. pyenv
 
@@ -207,9 +201,7 @@ docker-compose down
 
 check opensearch by visiting http://localhost:5601/app/login? or running `curl https://localhost:9200 -ku 'admin:admin'`
 
-## Sagemaker setup
-- Launch a SageMaker Notebook from SageMaker > Notebook > Notebook instances > Create notebook instance
-- Select `ml.g4dn.xlarge` instance type (see [https://aws.amazon.com/sagemaker/pricing/] for pricing)
+## Conda setup
 
 ### Install Python dependencies
 
@@ -219,11 +211,8 @@ Create a new terminal and run the following:
 # Switch to a bash shell
 bash
 
-# Change to the repo root
-cd ~/SageMaker/hackathon
 
-# Activate a Python 3.10 environment pre-configured with PyTorch
-conda create -n hackathon python=3.10.13
+# Activate a Python 3.10 environment 
 conda create -n hackathon python=$(cat .python-version)
 conda activate hackathon
 
