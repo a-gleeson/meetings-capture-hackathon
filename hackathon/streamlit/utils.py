@@ -46,8 +46,6 @@ from hackathon.vectorstore.embeddings import (
 )
 from hackathon.vectorstore.opensearch import OpensearchClient
 from hackathon.vectorstore.vectorstore import (
-    ChromaClient,
-    ChromaStore,
     OpensearchClientStore,
     OpenSearchStore,
 )
@@ -59,61 +57,6 @@ from hackathon.vectorstore.vestorstore_loader import VectorstoreLoader
 get_logger = setup_logging()
 logger = get_logger(__name__)
 cwd = os.getcwd()
-
-
-def _get_session():
-    runtime = get_instance()
-    session_id = get_script_run_ctx().session_id
-    session_info = runtime._session_mgr.get_session_info(session_id)
-    if session_info is None:
-        raise RuntimeError("Couldn't get your Streamlit Session object.")
-    return session_info.session
-
-
-def get_password():
-    secret_name = "streamlit-access-password"
-
-    # Create a Secrets Manager client
-    session = boto3.session.Session()
-    client = session.client(service_name="secretsmanager", region_name=AWS_REGION)
-
-    try:
-        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
-    except Exception as e:
-        # For a list of exceptions thrown, see
-        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
-        raise e
-
-    secret = json.loads(get_secret_value_response["SecretString"])
-    return secret["streamlit-access-password"]
-
-
-def check_password():
-    """Returns `True` if the user had the correct password."""
-    logger.debug("Checking password ... ")
-
-    def password_entered():
-        """Checks whether a password entered by the user is correct."""
-        if hmac.compare_digest(st.session_state["password"], get_password()):
-            st.session_state["password_correct"] = True
-            del st.session_state["password"]  # Don't store the password.
-        else:
-            st.session_state["password_correct"] = False
-
-    # Return True if the password is validated.
-    if st.session_state.get("password_correct", False):
-        logger.debug("password correct ...")
-        return True
-
-    # Show input for password.
-    st.text_input(
-        "Password", type="password", on_change=password_entered, key="password"
-    )
-    if "password_correct" in st.session_state:
-        logger.debug("password incorrect ...")
-        st.error("😕 Password incorrect")
-    return False
-
 
 def initialise_llm_runner():
     # Initialise the new embedder
@@ -127,28 +70,11 @@ def initialise_llm_runner():
             EMBEDDING_ENDPOINT_NAME, AWS_REGION
         )
 
-    if VECTOR_STORE_CONFIG == "chroma":
-        vector_store = ChromaStore(
-            embedding_function=st_embedder,
-            collection_name=OPENSEARCH_INDEX_NAME,
-        )
-    else:
-        if "skills_os_client" not in st.session_state:
-            st.session_state["skills_os_client"] = OpensearchClient(
-                OPENSEARCH_SKILLS_INDEX_NAME,
-                OPENSEARCH_ENDPOINT_NAME,
-                AWS_REGION,
-            )
-        if "vacancy_os_client" not in st.session_state:
-            st.session_state["vacancy_os_client"] = OpensearchClient(
-                OPENSEARCH_INDEX_NAME, OPENSEARCH_ENDPOINT_NAME, AWS_REGION
-            )
-
-        vector_store = OpenSearchStore(
-            st_embedder,
-            OPENSEARCH_INDEX_NAME,
-            st.session_state["vacancy_os_client"],
-        )
+    vector_store = OpenSearchStore(
+        st_embedder,
+        OPENSEARCH_INDEX_NAME,
+        st.session_state["vacancy_os_client"],
+    )
 
     if LLM_MODEL == "local_llm":
         llm_model_path = f"{PROJECT_PATH}/models/llama-2-7b-chat.Q4_K_M.gguf"
@@ -177,17 +103,14 @@ def initialise_vector_store_loader():
             EMBEDDING_ENDPOINT_NAME, AWS_REGION
         )
 
-    if VECTOR_STORE_CONFIG == "chroma":
-        vector_store = ChromaClient(st_embedder, OPENSEARCH_INDEX_NAME)
-    else:
-        if "vacancy_os_client" not in st.session_state:
-            st.session_state["vacancy_os_client"] = OpensearchClient(
-                OPENSEARCH_INDEX_NAME, OPENSEARCH_ENDPOINT_NAME, AWS_REGION
-            )
-        vector_store = OpensearchClientStore(
-            st_embedder,
-            OPENSEARCH_INDEX_NAME,
-            st.session_state["vacancy_os_client"],
+    if "vacancy_os_client" not in st.session_state:
+        st.session_state["vacancy_os_client"] = OpensearchClient(
+            OPENSEARCH_INDEX_NAME, OPENSEARCH_ENDPOINT_NAME, AWS_REGION
+        )
+    vector_store = OpensearchClientStore(
+        st_embedder,
+        OPENSEARCH_INDEX_NAME,
+        st.session_state["vacancy_os_client"],
         )
 
     if LOADER_CONFIG == "file_loader":

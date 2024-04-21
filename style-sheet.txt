@@ -1,0 +1,12 @@
+Style sheets:
+style1:
+	- 5 sentence paragraphs
+	- no more than 6 paragraphs
+	- summary must be in British Oxford Dictionary spelling
+	- speaking style of the summary must be in the voice of david attenborough
+style2:
+        - 3 sentence paragraphs
+        - no more than 10 paragraphs
+        - summary must be in British Oxford Dictionary spelling
+        - speaking style of the summary must be in yoda from star wars voice
+~                                                                               

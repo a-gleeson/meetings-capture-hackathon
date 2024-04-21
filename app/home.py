@@ -6,18 +6,11 @@ import streamlit as st
 from PIL import Image
 
 from config.logging import setup_logging
-from config.settings import ENV
-from hackathon.streamlit.utils import check_password
 
 get_logger = setup_logging()
 logger = get_logger(__name__)
 
 st.set_page_config(page_title="QuickQuill", page_icon="memo", layout="wide")
-
-# Password protection of pages
-if ENV.upper() == "PROD" and not check_password():
-    st.stop()  # Do not continue if check_password is not True.
-
 
 # Image loading
 def image_to_base64(image):

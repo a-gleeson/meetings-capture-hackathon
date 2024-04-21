@@ -32,46 +32,6 @@ class VectorStore(ABC):
     def get_as_retriever(self, search_kwargs: int = 2):
         raise NotImplementedError()
 
-
-class ChromaStore(VectorStore):
-    """
-    https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.chroma.Chroma.html?highlight=chroma#langchain_community.vectorstores.chroma.Chroma
-    """
-
-    def __init__(
-        self, embedding_function: Embeddings, collection_name: str = ""
-    ) -> None:
-        print(f"persist_directory name: {collection_name}")
-        self.vectorstore = Chroma(
-            embedding_function=embedding_function,
-            persist_directory=collection_name,
-            collection_name=collection_name,
-        )
-
-    def store_data(self, documents: List[Document]):
-        self._store_documents(documents)
-
-    def _store_documents(self, documents: List[Document]):
-        self.vectorstore.add_documents(documents)
-
-    def retrieve_data(self, query: str):
-        return self.vectorstore.similarity_search(query, k=20)
-
-    def get_as_retriever(self, search_kwargs: int = 2) -> VectorStoreRetriever:
-        return self.vectorstore.as_retriever(search_kwargs={"k": search_kwargs})
-
-    def get_documents(self, limit: Optional[int] = None):
-        return self.vectorstore.get(limit=limit)
-
-    def search_with_score(self, query: str):
-        return self.vectorstore.similarity_search_with_relevance_scores(query, k=100)
-
-    def similarity_search_with_filter(
-        self, query: str, filter: Optional[Dict[str, str]]
-    ):
-        return self.vectorstore.similarity_search(query, k=10, filter=filter)
-
-
 class OpenSearchStore(VectorStore):
     """
 
@@ -159,7 +119,6 @@ class OpenSearchStore(VectorStore):
     def retrieve_data_with_relevance_scores(self, query):
         return self.vectorstore.similarity_search_with_relevance_scores(query, k=10)
 
-
 class VectorStoreClient(ABC):
     """
     Vector Store Client class charged with loading data into the vector store.
@@ -180,57 +139,6 @@ class VectorStoreClient(ABC):
     @abstractmethod
     def delete_data_store(self, store=None):
         raise NotImplementedError()
-
-
-class ChromaClient(VectorStoreClient):
-
-    def __init__(self, embedding_function: Embeddings, name: str = "") -> None:
-        self.embedding_function: Embeddings = embedding_function
-        self.name = name
-        self.client = Chroma(
-            embedding_function=self.embedding_function,
-            persist_directory=self.name,
-            collection_name=self.name,
-        )
-
-    def store_data(self, documents):
-        logger.info("storing docs %s in Chroma", len(documents))
-        response = self.client.add_documents(documents)
-        logger.info("Put docs %s in Chroma with response %s", len(documents), response)
-        self.client.persist()
-        return response
-
-    def check_data_exists(self, store=None):
-        import os
-
-        if not os.path.isdir(self.name):
-            return False
-
-        for entry in os.listdir(self.name):
-            path = os.path.join(self.name, entry)
-            if os.path.isdir(path):
-                return True
-        return False
-
-    def create_store(self, store=None):
-        if store:
-            collection = store
-        else:
-            collection = self.name
-        self.client = Chroma(
-            embedding_function=self.embedding_function,
-            persist_directory=collection,
-            collection_name=collection,
-        )
-        return self.client
-
-    def delete_data_store(self, store=None):
-        try:
-            self.client.delete_collection()
-            # shutil.rmtree(self.name)
-        except Exception as error:
-            print(f"Error: {error}")
-
 
 class OpensearchClientStore(VectorStoreClient):
     """
